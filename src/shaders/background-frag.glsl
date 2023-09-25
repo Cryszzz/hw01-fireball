@@ -29,8 +29,9 @@ vec4 colorstar(vec2 point){
     vec2 f=fract(point);
     vec2 rad=vec2(rand(i),rand2(i));
     float length=length(f-rad);
-    if(length<0.01f){
-        return vec4(1.0f,1.0f,1.0f,sin(u_Time*0.02f+rand(i)*10.0f));
+    float show=clamp(sin(u_Time*0.02f+rand(i)*10.0f),0.0f,1.0f);
+    if(length<0.01f && show!=0.0f){
+        return vec4(1.0f,1.0f,1.0f,show);
     }
     return vec4(0.0f);
 }
