@@ -143,7 +143,7 @@ class ShaderProgram {
     gl.enable(gl.BLEND);
     gl.disable(gl.DEPTH_TEST);
 
-    let rad=1.0;
+    let rad=0.85;
     let trans=0.5;
     for(let i =0;i<10;i++){
       if (this.unifradius !== -1) {
@@ -160,7 +160,7 @@ class ShaderProgram {
     gl.enable(gl.DEPTH_TEST);
     //gl.disable(gl.BLEND); 
     if (this.unifradius !== -1) {
-      gl.uniform1f(this.unifradius, 1.0);
+      gl.uniform1f(this.unifradius, 0.85);
     }
     gl.uniform1f(this.uniftrans,1.0);
     gl.drawElements(d.drawMode(), d.elemCount(), gl.UNSIGNED_INT, 0);

@@ -43,10 +43,10 @@ float snoise(vec3 uv, float res)
 // The part of code in this function is referenced from https://www.shadertoy.com/view/lsf3RH
 void main()
 {
-    float width=(gl_FragCoord.x-iResolution.x/2.0f)/(iResolution.y/2.0f);
-    float height=(gl_FragCoord.y-iResolution.y/2.0f)/(iResolution.y/2.0f);
+    float width=(gl_FragCoord.x-iResolution.x/2.0f);
+    float height=(gl_FragCoord.y-iResolution.y/2.0f);
 
-    vec2 p=vec2(width,height);
+    vec2 p=vec2(width,height)/(iResolution.y/2.0f);
     float color = 3.0 - (3.*length(2.*p));
 	
 	vec3 coord = vec3(atan(p.x,p.y)/6.2832+.5, length(p)*.4, .5);
