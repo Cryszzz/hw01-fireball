@@ -33,6 +33,7 @@ class ShaderProgram {
   unifTime: WebGLUniformLocation;
   unifradius: WebGLUniformLocation;
   uniftrans: WebGLUniformLocation;
+  unifRes: WebGLUniformLocation;
 
   constructor(shaders: Array<Shader>) {
     this.prog = gl.createProgram();
@@ -56,6 +57,7 @@ class ShaderProgram {
     this.unifTime       = gl.getUniformLocation(this.prog, "u_Time");
     this.unifradius       = gl.getUniformLocation(this.prog, "New_radius");
     this.uniftrans      = gl.getUniformLocation(this.prog, "Trasnparancy");
+    this.unifRes = gl.getUniformLocation(this.prog, "iResolution");
   }
 
   use() {
@@ -93,6 +95,13 @@ class ShaderProgram {
     }
   }
 
+  setRes(width: GLfloat,height: GLfloat) {
+    this.use();
+    if (this.unifRes !== -1) {
+      gl.uniform2f(this.unifRes, width,height);
+    }
+  }
+
   setGeometryColor(color: vec4) {
     this.use();
     if (this.unifColor !== -1) {
@@ -100,9 +109,9 @@ class ShaderProgram {
     }
   }
 
-  interpolate(a: GLfloat,b: GLfloat,time: GLfloat){
-    let t=time%1.0;
-    return (b-a)*Math.sin(t*Math.PI)+a;
+  interpolate(a: GLfloat,time: GLfloat, idx: number){
+    let t=time%1.0+idx;
+    return Math.pow(a,t);
   }
 
   draw(d: Drawable, time: GLfloat) {
@@ -138,16 +147,18 @@ class ShaderProgram {
     let trans=0.5;
     for(let i =0;i<10;i++){
       if (this.unifradius !== -1) {
-        gl.uniform1f(this.unifradius, this.interpolate(rad,rad*1.1,time));
+        gl.uniform1f(this.unifradius, rad*this.interpolate(1.1,time,i));
       }
-      gl.uniform1f(this.uniftrans,this.interpolate(trans,trans*0.05,time));
+      if (this.uniftrans !== -1) {
+        gl.uniform1f(this.uniftrans,trans*this.interpolate(0.05,time,i));
+      }
       gl.drawElements(d.drawMode(), d.elemCount(), gl.UNSIGNED_INT, 0);
-      rad*=1.1;
-      trans*=0.05;
+      //rad*=2.0;
+      //trans*=0.05;
     }
     
     gl.enable(gl.DEPTH_TEST);
-    gl.disable(gl.BLEND); 
+    //gl.disable(gl.BLEND); 
     if (this.unifradius !== -1) {
       gl.uniform1f(this.unifradius, 1.0);
     }
@@ -158,8 +169,18 @@ class ShaderProgram {
     if (this.attrNor != -1) gl.disableVertexAttribArray(this.attrNor);
   }
 
-  drawBackground(){
+  drawBackground(d: Drawable, time: GLfloat){
     this.use();
+    
+    if (this.attrPos != -1 && d.bindPos()) {
+      gl.enableVertexAttribArray(this.attrPos);
+      gl.vertexAttribPointer(this.attrPos, 4, gl.FLOAT, false, 0, 0);
+    }
+    d.bindIdx();
+    gl.disable(gl.DEPTH_TEST);
+    gl.drawElements(d.drawMode(), d.elemCount(), gl.UNSIGNED_INT, 0);
+
+    if (this.attrPos != -1) gl.disableVertexAttribArray(this.attrPos);
   }
 };
 

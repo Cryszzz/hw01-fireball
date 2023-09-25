@@ -38,9 +38,10 @@ class OpenGLRenderer {
     }
   }
 
-  renderBack(prog: ShaderProgram, time: GLfloat) {
+  renderBack(prog: ShaderProgram, d: Drawable,time: GLfloat) {
     prog.setTime(time);
-    prog.drawBackground();
+    prog.setRes(this.canvas.width, this.canvas.height);
+    prog.drawBackground(d,time);
   }
 };
 

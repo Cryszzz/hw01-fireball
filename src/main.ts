@@ -34,6 +34,7 @@ function loadScene() {
   cube.create();
   square = new Square(vec3.fromValues(0, 0, 0));
   square.create();
+
 }
 
 function main() {
@@ -76,6 +77,11 @@ function main() {
     new Shader(gl.FRAGMENT_SHADER, require('./shaders/ball-frag.glsl')),
   ]);
 
+  const background = new ShaderProgram([
+    new Shader(gl.VERTEX_SHADER, require('./shaders/background-vert.glsl')),
+    new Shader(gl.FRAGMENT_SHADER, require('./shaders/background-frag.glsl')),
+  ]);
+
   //lambert.setGeometryColor(vec4.fromValues(1.0,1.0,0.0,1.0));
   // This function will be called every frame
   
@@ -90,7 +96,7 @@ function main() {
       icosphere = new Icosphere(vec3.fromValues(0, 0, 0), 1, prevTesselations);
       icosphere.create();
     }
-    
+    renderer.renderBack(background,square,time);
     //vec4.fromValues(palette.color[0],palette.color[1],palette.color[2],palette.color[3])
     renderer.render(camera, lambert, [
       icosphere
@@ -99,18 +105,8 @@ function main() {
 
     // Tell the browser to call `tick` again whenever it renders a new frame
     time++;
-    /*if(negate==false){
-      time++;
-      if(time==240){
-        negate=true;
-      }
-    }else{
-      time--;
-      if(time==0){
-        negate=false;
-      }
-    }*/
-   
+    
+
     requestAnimationFrame(tick);
   }
 
