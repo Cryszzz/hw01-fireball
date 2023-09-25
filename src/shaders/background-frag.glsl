@@ -15,6 +15,25 @@ const vec4 Fire_2= vec4(244.0f/255.0f,172.0f/255.0f,0.0f/255.0f,1.0f);
 const vec4 Fire_1= vec4(255.0f/255.0f,219.0f/255.0f,0.0f/255.0f,1.0f);
 const vec4 Fire_0= vec4(255.0f/255.0f,255.0f/255.0f,254.0f/255.0f,1.0f);
 
+float rand(vec2 co){
+    return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
+}
+
+float rand2(vec2 co){
+    return fract(sin(dot(co, vec2(43.21, 70.98853))) * 42741.5449);
+}
+
+vec4 colorstar(vec2 point){
+    point=point*200.0f;
+    vec2 i=floor(point);
+    vec2 f=fract(point);
+    vec2 rad=vec2(rand(i),rand2(i));
+    float length=length(f-rad);
+    if(length<0.01f){
+        return vec4(1.0f,1.0f,1.0f,sin(u_Time*0.02f+rand(i)*10.0f));
+    }
+    return vec4(0.0f);
+}
 
 // The function here is referenced from https://www.shadertoy.com/view/lsf3RH
 float snoise(vec3 uv, float res)
@@ -56,6 +75,10 @@ void main()
 		float power = pow(2.0, float(i));
 		color += (1.5 / power) * snoise(coord + vec3(0.,-u_Time*.0005, u_Time*.0001), power*16.);
 	}
-	out_Col = color*(Fire_2-Fire_4)+Fire_2;
-
+    //+
+    vec4 tempcolor=color*(Fire_2-Fire_4)+Fire_2;
+    tempcolor=vec4(clamp(tempcolor.x,0.0f,1.0f),clamp(tempcolor.y,0.0f,1.0f),clamp(tempcolor.z,0.0f,1.0f),clamp(tempcolor.w,0.0f,1.0f));
+    tempcolor+=colorstar(vec2(width/iResolution.x,height/iResolution.y));
+    out_Col =vec4(clamp(tempcolor.x,0.0f,1.0f),clamp(tempcolor.y,0.0f,1.0f),clamp(tempcolor.z,0.0f,1.0f),clamp(tempcolor.w,0.0f,1.0f));
+	
 }
